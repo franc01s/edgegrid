@@ -26,7 +26,7 @@ func newApplication() *Application {
 		panic(err)
 	}
 
-	// init http client 
+	// init http client
 	app.client = &http.Client{
 		Timeout: 10 * time.Second, // Set timeout
 		Jar:     jar,
@@ -73,6 +73,9 @@ func (a *Application) pullEdge() {
 	a.results = currentPowerFlow
 
 }
+func readyZ(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(200)
+}
 
 func (a *Application) getResult(w http.ResponseWriter, req *http.Request) {
 	power := struct {
@@ -114,6 +117,7 @@ func main() {
 	fmt.Println(j.ID())
 	s.Start()
 	http.HandleFunc("/", app.getResult)
+	http.HandleFunc("/readyz", readyZ)
 
 	http.ListenAndServe(":8080", nil)
 

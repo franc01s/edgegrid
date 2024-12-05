@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: edgegrid
+  labels: 
+    app: edgegrid
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: edgegrid
+  template:
+    metadata:
+      labels:
+        app: edgegrid
+    spec:
+      containers:
+        - name: edgegrid
+          image: ghcr.io/franc01s/edgegrid:20241205-a4509a5
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 150m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            failureThreshold: 3
+          env:
+            - name: EDGEGRID_SITE
+              value: $EDGEGRID_SITE
+            - name: EDGEGRID_API_KEY
+              value: $EDGEGRID_API_KEY

@@ -1,4 +1,4 @@
-module orca
+module github.com/franc01s/edgegrid
 
 go 1.23
 
