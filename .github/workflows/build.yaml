@@ -11,6 +11,9 @@ jobs:
   release-linux-amd64:
     name: Build binary
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     strategy:
       matrix:
         goos: [linux]
