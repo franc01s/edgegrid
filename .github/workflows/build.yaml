@@ -14,10 +14,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    strategy:
-      matrix:
-        goos: [linux]
-        goarch: [arm64]
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry
@@ -35,8 +31,10 @@ jobs:
             type=raw,{{date 'YYYYMMDD'}}-{{sha}}
 
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           push: true
