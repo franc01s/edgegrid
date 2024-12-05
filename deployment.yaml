@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: edgegrid
-          image: ghcr.io/franc01s/edgegrid:20241205-0358643
+          image: ghcr.io/franc01s/edgegrid:20241205-a4509a5
           imagePullPolicy: IfNotPresent
           resources:
             limits:
@@ -32,14 +32,14 @@ spec:
 
           readinessProbe:
             httpGet:
-              path: /
+              path: /readyz
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 15
           livenessProbe:
             httpGet:
-              path: /
+              path: /readyz
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 30
