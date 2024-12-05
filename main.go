@@ -39,6 +39,7 @@ var count int
 
 func (a *Application) pullEdge() {
 
+	slog.Debug("Pull Edge")
 	uri := fmt.Sprintf("https://monitoringapi.solaredge.com/site/%s/currentPowerFlow?api_key=%s", os.Getenv("EDGEGRID_SITE"), os.Getenv("EDGEGRID_API_KEY"))
 	req, _ := http.NewRequest("GET", uri, nil)
 	resp, err := a.client.Do(req)
@@ -90,6 +91,7 @@ func (a *Application) getResult(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 
+	slog.Info("Starting application")
 	app := newApplication()
 
 	s, err := gocron.NewScheduler(
