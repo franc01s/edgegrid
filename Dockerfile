@@ -9,7 +9,7 @@ RUN go mod download
 RUN go build -ldflags "-s -w" -o /server \
     && upx /server
 
-FROM gcr.io/distroless/base-debian11
+FROM debian:bullseye-slim
 WORKDIR /
 COPY --from=build /server /server
 EXPOSE 8080
