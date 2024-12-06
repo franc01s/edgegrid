@@ -8,12 +8,16 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  release-linux-amd64:
+  release-linux-arm64:
     name: Build binary
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [arm64]
     steps:
       - uses: actions/checkout@v4
       - name: Log in to the Container registry
