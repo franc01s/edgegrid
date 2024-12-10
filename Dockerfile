@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 golang:1.23-bullseye AS build
+FROM golang:1.23-bullseye AS build
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends upx wget unzip
