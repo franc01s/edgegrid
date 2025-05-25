@@ -80,14 +80,16 @@ func readyZ(w http.ResponseWriter, req *http.Request) {
 
 func (a *Application) getResult(w http.ResponseWriter, req *http.Request) {
 	power := struct {
-		Load    float64 `json:"load"`
-		Grid    float64 `json:"grid"`
-		Pv      float64 `json:"pv"`
-		Storage float64 `json:"storage"`
+		Load        float64 `json:"load"`
+		Grid        float64 `json:"grid"`
+		Pv          float64 `json:"pv"`
+		Storage     float64 `json:"storage"`
+		ChargeLevel int     `json:"chargeLevel"`
 	}{Load: a.results.SiteCurrentPowerFlow.LOAD.CurrentPower,
-		Pv:      a.results.SiteCurrentPowerFlow.PV.CurrentPower,
-		Storage: a.results.SiteCurrentPowerFlow.STORAGE.CurrentPower,
-		Grid:    a.results.SiteCurrentPowerFlow.GRID.CurrentPower}
+		Pv:          a.results.SiteCurrentPowerFlow.PV.CurrentPower,
+		Storage:     a.results.SiteCurrentPowerFlow.STORAGE.CurrentPower,
+		ChargeLevel: a.results.SiteCurrentPowerFlow.STORAGE.ChargeLevel,
+		Grid:        a.results.SiteCurrentPowerFlow.GRID.CurrentPower}
 
 	powerJson, _ := json.Marshal(power)
 	w.Write(powerJson)
