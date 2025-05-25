@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/bitly/go-simplejson"
 	"github.com/go-co-op/gocron/v2"
 	"io"
 	"log/slog"
@@ -15,7 +14,7 @@ import (
 
 type Application struct {
 	client  *http.Client
-	results *simplejson.Json
+	results *Power
 }
 
 func newApplication() *Application {
@@ -66,9 +65,10 @@ func (a *Application) pullEdge() {
 	count++
 	slog.Info(fmt.Sprintf("updating EgeGrid values: %d", count))
 
-	currentPowerFlow, err := simplejson.NewJson(body)
+	currentPowerFlow := new(Power)
+	err = json.Unmarshal(body, currentPowerFlow)
 	if err != nil {
-		slog.Error("error making simple json", err.Error())
+		slog.Error("error unmarshal body", err.Error())
 	}
 
 	a.results = currentPowerFlow
@@ -80,10 +80,14 @@ func readyZ(w http.ResponseWriter, req *http.Request) {
 
 func (a *Application) getResult(w http.ResponseWriter, req *http.Request) {
 	power := struct {
-		Load float64 `json:"load"`
-		Grid float64 `json:"grid"`
-	}{Load: a.results.Get("siteCurrentPowerFlow").Get("LOAD").Get("currentPower").MustFloat64(),
-		Grid: a.results.Get("siteCurrentPowerFlow").Get("GRID").Get("currentPower").MustFloat64()}
+		Load    float64 `json:"load"`
+		Grid    float64 `json:"grid"`
+		Pv      float64 `json:"pv"`
+		Storage float64 `json:"storage"`
+	}{Load: a.results.SiteCurrentPowerFlow.LOAD.CurrentPower,
+		Pv:      a.results.SiteCurrentPowerFlow.PV.CurrentPower,
+		Storage: a.results.SiteCurrentPowerFlow.STORAGE.CurrentPower,
+		Grid:    a.results.SiteCurrentPowerFlow.GRID.CurrentPower}
 
 	powerJson, _ := json.Marshal(power)
 	w.Write(powerJson)
@@ -111,6 +115,7 @@ func main() {
 		gocron.NewTask(
 			app.pullEdge,
 		),
+		gocron.WithStartAt(gocron.WithStartImmediately()),
 	)
 	if err != nil {
 		panic(err)
